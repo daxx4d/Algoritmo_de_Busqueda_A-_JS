@@ -1,0 +1,357 @@
+window.onload = ini;
+
+// 0:borrar, 1:inicio, 2:obstaculo, 3:destino
+
+var canvas,
+    ctx,
+    selected,
+    matriz;
+
+function ini(){
+
+    console.log("Iniciando...");
+    
+    canvas = $("#canvas")[0];
+    ctx = canvas.getContext("2d");
+    
+    //se inicializa la matriz principal
+    matriz = new Matriz(20, 12);
+    matriz.init();
+
+    $(".Inicio").click(opcion);
+    $(".destino").click(opcion);
+    $(".obstaculo").click(opcion);
+    $(".borrar").click(opcion);
+    
+    $(".buscar").click(buscar);
+    $(".reiniciar").click(reiniciar);
+    
+    canvas.onclick = canvasEvent;
+    
+    paint();
+    
+}
+
+///////////////////////////////////* Eventos */////////////////////////////////////////
+
+function buscar(){
+
+    main();
+
+}
+
+function reiniciar(){
+
+    
+    
+    return;
+
+}
+
+function opcion(evt){
+
+    evt = $(evt.target);
+    var sel = "Error";
+    
+    
+    switch(evt.attr("class")){
+    
+        case "inicio":
+            selected = 1;
+            break;
+            
+        case "obstaculo":
+            selected = 2;
+            break;
+            
+        case "destino":
+            selected = 3;
+            break;
+            
+        case "borrar":
+            selected = 0;
+            break;
+            
+        default:
+            console.log("no se encontro el valor 'opcion()' : " + evt.attr("class"));
+            break;
+    
+    }
+    
+}
+
+function canvasEvent(evt){
+
+    targ = evt.target;
+    
+    var posX = evt.clientX;
+    var posY = evt.clientY;
+    var anch = canvas.width / matriz.x;
+    
+    write(posX+":"+posY);
+    
+    //calcula cual fue el cuadro seleccionado en la matriz
+    var x = 0;
+    var y = 0;
+    var cont = 0;
+    var pos = [0,0];
+    var end = false;
+    //primero se busca por el eje X
+    while(!end){
+    
+        //se le resta 3 debido a una imprecision de el elemento canvas
+        if( (posX-3>x && posX-3 < x+anch) ){
+        
+            pos[0] = cont;
+            cont = 0;
+            
+            //luego por el eje Y
+            while(!end){
+            
+                if(posY>y-3 && posY-3 < y+anch){
+                
+                    pos[1] = cont;
+                    cont = 0;
+                    end = true;
+                    break;
+                    
+                }
+                
+                y += anch;
+                cont++;
+                if( x > 800 ){ write("Error posicion no encontrada; Y : "+posY); return; }
+            
+            }//Eje Y
+        
+        }
+        
+        x += (!end)? anch : 0;
+        cont++;
+        if( x > 800 ){ write("Error posicion no encontrada; X : "+posX); return; }
+    
+    }//Eje X
+    
+    write("posicion de la matriz; "+ (pos[0]+1) +":"+ (pos[1]+1));
+    
+    var matrzNum = matriz.mtrz[ pos[0] ][ pos[1] ];
+    switch(selected){
+            
+        case 0:
+            if(matrzNum == 2){ matriz.mtrz[ pos[0] ][ pos[1] ] = 0; }
+            break;
+            
+        case 1:
+            matriz.mtrz[ matriz.ini[0] ][ matriz.ini[1] ] = 0;
+            matriz.ini[0] = pos[0]; 
+            matriz.ini[1] = pos[1];
+            matriz.mtrz[ matriz.ini[0] ][ matriz.ini[1] ] = 1;
+            break;
+            
+        case 2:
+            if(matrzNum == 0){ matriz.mtrz[ pos[0] ][ pos[1] ] = 2; }
+            break;
+            
+        case 3:
+            matriz.mtrz[ matriz.dest[0]-1 ][ matriz.dest[1] ] = 0;
+            matriz.dest[0] = pos[0]; 
+            matriz.dest[1] = pos[1];
+            matriz.mtrz[ matriz.dest[0] ][ matriz.dest[1] ] = 3;
+            break;
+            
+        default:
+            write("Error selected not found")
+            console.log("Error 'canvasEvent' 'switch()' : "+selected);
+            break;  
+    
+    }
+    
+    paint();
+    
+}
+
+////////////////////////////////////* paint *//////////////////////////////////////////
+
+function paint(){
+
+    var posX = 0;
+    var posY = 0;
+    var anch = canvas.width / matriz.x;
+    
+    ctx.fillStyle = "white";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    
+    //se dibuja un borde alrededor de cada elemento de la matriz principal
+    for(var y = 0; y < matriz.y; y++){
+    
+        for(var x = 0; x < matriz.x; x++){
+            
+            ctx.moveTo(posX, posY);
+            ctx.lineTo(posX, posY+anch);
+            ctx.lineTo(posX+anch, posY+anch);
+            ctx.lineTo(posX+anch, posY);
+            ctx.lineTo(posX, posY);
+            ctx.strokeStyle = "black";
+            ctx.stroke();
+            
+            posX += anch;
+            
+        }
+        
+        posX = 0;
+        posY += anch;
+              
+    }
+    
+    //se dibuja el cuadro de inicio
+    posX = (matriz.ini[0] == 0)? 0 : anch * (matriz.ini[0]-0);
+    posY = (matriz.ini[1] == 0)? 0 : anch * (matriz.ini[1]-0);
+    ctx.fillStyle = "blue"
+    ctx.fillRect(posX,posY,anch,anch);
+    
+    //se dibuja el cuadro de destino
+    posX = (matriz.dest[0] == 0)? 0 : anch * (matriz.dest[0]-0);
+    posY = (matriz.dest[1] == 0)? 0 : anch * (matriz.dest[1]-0);
+    ctx.fillStyle = "red"
+    ctx.fillRect(posX,posY,anch,anch);
+    
+    
+    //se dibujan los obstaculos
+    posX = 0; posY = 0;
+    for(var y = 0; y < matriz.y; y++){
+    
+        for(var x = 0; x < matriz.x; x++){
+            
+            if(matriz.mtrz[x][y] == 2){
+            
+                ctx.fillStyle = "grey"
+                ctx.fillRect(posX,posY,anch,anch);
+            
+            }
+            
+            posX += anch;
+            
+        }
+        
+        posX = 0;
+        posY += anch;
+              
+    }
+
+}
+
+function paintMovs(mov){
+
+    var anch = canvas.width / matriz.x;
+    for(var x = 1;x < mov.length; x++){
+    
+        var nod = mov[x];
+        
+        var posX = (nod.pos[0] == 0)? 0 : anch * nod.pos[0];
+        var posY = (nod.pos[1] == 0)? 0 : anch * nod.pos[1];
+        
+        ctx.fillStyle = "#68ff6b";
+        ctx.fillRect(posX, posY, anch, anch);
+    
+    }
+
+}
+
+//////////////////////////////////* functions *////////////////////////////////////////
+
+function write(text){
+
+    var con = $(".console")[0];
+    con.textContent = text;
+    
+}
+
+///////////////////////////////////* Matriz *//////////////////////////////////////////
+// 40/24
+function Matriz(x, y){
+
+    this.x = (x == null)? 1 : x;
+    this.y = (y == null)? 1 : y;
+    this.mtrz = null;
+    
+    this.abierto = null;
+    this.cerrado = null;
+    
+    this.ini = [0,0];
+    this.dest = [x-1,y-1];
+    this.obstlc = new Array();
+    
+    this.init = function(){
+    
+        this.mtrz = new Array(this.x);
+        for(x = 0; x < this.x; x++){
+        
+            this.mtrz[x] = new Array(this.y);
+        
+        }
+        
+        for(var x = 0; x < this.x; x++){
+        
+            for(var y = 0; y < this.y; y++){
+            
+                this.mtrz[x][y] = 0;
+            
+            }
+        
+        }
+        
+        console.log("Matriz cargada");
+        console.info(this);
+    
+    }
+    
+    this.genObstlc = function(){
+    
+    
+    
+    }
+
+}
+
+
+
+
+
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////////////
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
