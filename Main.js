@@ -1,7 +1,5 @@
 window.onload = ini;
 
-// 0:borrar, 1:inicio, 2:obstaculo, 3:destino
-
 var canvas,
     ctx,
     selected,
@@ -42,7 +40,13 @@ function buscar(){
 
 function reiniciar(){
 
+    matriz.init();
+    matriz.ini = [0,0];
+    matriz.dest = [matriz.sizeX-1, matriz.sizeY-1];
     
+    paint();
+    
+    write("Matriz reiniciada");
     
     return;
 
@@ -57,11 +61,11 @@ function opcion(evt){
     switch(evt.attr("class")){
     
         case "inicio":
-            selected = 1;
+            selected = 2;
             break;
             
         case "obstaculo":
-            selected = 2;
+            selected = 1;
             break;
             
         case "destino":
@@ -136,30 +140,34 @@ function canvasEvent(evt){
     var matrzNum = matriz.mtrz[ pos[0] ][ pos[1] ];
     switch(selected){
             
-        case 0:
-            if(matrzNum == 2){ matriz.mtrz[ pos[0] ][ pos[1] ] = 0; }
+        case 0://nodo abierto
+            if(matrzNum == 1){ matriz.mtrz[ pos[0] ][ pos[1] ] = 0; }
             break;
             
-        case 1:
-            matriz.mtrz[ matriz.ini[0] ][ matriz.ini[1] ] = 0;
-            matriz.ini[0] = pos[0]; 
-            matriz.ini[1] = pos[1];
-            matriz.mtrz[ matriz.ini[0] ][ matriz.ini[1] ] = 1;
+        case 1://nodo cerrado
+            if( (matriz.ini[0] != pos[0] || matriz.ini[1] != pos[1]) && (matriz.dest[0] != pos[0] || matriz.dest[1] != pos[1]) ){
+                matriz.mtrz[ pos[0] ][ pos[1] ] = (matrzNum == 0)? 1 : 0; }
             break;
             
-        case 2:
-            if(matrzNum == 0){ matriz.mtrz[ pos[0] ][ pos[1] ] = 2; }
+        case 2://node de inicio
+            if(matrzNum == 0 && (matriz.dest[0] != pos[0] || matriz.dest[1] != pos[1]) ){
+                
+                matriz.ini = pos;
+            
+            }
             break;
             
-        case 3:
-            matriz.mtrz[ matriz.dest[0]-1 ][ matriz.dest[1] ] = 0;
-            matriz.dest[0] = pos[0]; 
-            matriz.dest[1] = pos[1];
-            matriz.mtrz[ matriz.dest[0] ][ matriz.dest[1] ] = 3;
+        case 3://nodo destino
+            if(matrzNum == 0 && matriz.ini[0] != pos[0] || matriz.ini[1] != pos[1]){
+                
+                matriz.dest = pos; 
+            
+            
+            }
             break;
             
         default:
-            write("Error selected not found")
+            write("Error selector no encontrado")
             console.log("Error 'canvasEvent' 'switch()' : "+selected);
             break;  
     
@@ -221,7 +229,7 @@ function paint(){
     
         for(var x = 0; x < matriz.sizeY; x++){
             
-            if(matriz.mtrz[x][y] == 2){
+            if(matriz.mtrz[x][y] == 1){/****************/
             
                 ctx.fillStyle = "grey"
                 ctx.fillRect(posX,posY,anch,anch);
