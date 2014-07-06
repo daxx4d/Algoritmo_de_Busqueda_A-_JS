@@ -1,19 +1,20 @@
 
-var costMov = 0;
+//var costMov = 0;
 
 function main(){
     
-    costMov = 0;
+    var costMov = 0;
     //contendra los movimientos necesarios para llegar a destino 
     var mov = new Array();
     
     //establece la ubicacion inicial como primera posicion
     var node = new ANode(matriz.ini[0], matriz.ini[1]);
+    matriz.mtrz[ node.pos[0] ][ node.pos[1] ] = 1;
     mov.push(node);
     
-    var abierto = new Array();
-    var cont = 0;
-    var sdf = 0;
+    var abierto = new Array(),
+        cont = 0,
+        sdf = 0;
     while(true){
     
         //se revisa siguiendo el orden de las agujas del reloj
@@ -22,89 +23,43 @@ function main(){
         node = mov[mov.length-1];
         console.log(node);//*
         
-        //se revisa si la ubicacion del nodo esta disponible
-        var nod = (matriz.mtrz[ node.pos[0] ][ node.pos[1]-1 ] != 2)? new ANode(node.pos[0], node.pos[1]-1) : null;//norte
-        if(nod){
-            
-            //luego se establece la ubicacion del nodo padre y se calcula el movimiento
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);//por ultimo se agrega a la lista de abiertos
-            
-        }
-        //lo mismo para los siguientes nodos...
+        //matriz que guarda las posibles posiciones adyacentes al nodo 
+        //[]1º para elegir cual nodo adyacente []2ª los valores X o Y del nodo adyacente
+        var nodesAdyPos = new Array(8);
+        nodesAdyPos[0] = new Array(node.pos[0], node.pos[1]-1); nodesAdyPos[1] = new Array(node.pos[0]+1, node.pos[1]-1);//norte, noreste
+        nodesAdyPos[2] = new Array(node.pos[0]+1, node.pos[1]); nodesAdyPos[3] = new Array(node.pos[0]+1, node.pos[1]+1);//este, sreste
+        nodesAdyPos[4] = new Array(node.pos[0], node.pos[1]+1); nodesAdyPos[5] = new Array(node.pos[0]-1, node.pos[1]+1);//sur, suroeste
+        nodesAdyPos[6] = new Array(node.pos[0]-1, node.pos[1]); nodesAdyPos[7] = new Array(node.pos[0]-1, node.pos[1]-1);//oeste, noroeste
         
-        var nod = (matriz.mtrz[ node.pos[0]+1 ][ node.pos[1]-1 ] != 2)? new ANode(node.pos[0]+1, node.pos[1]-1) : null;//noreste
-        if(nod){
-            
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
+        //se guardan las posiciones adyacentes disponibles
+        var nod;
+        for(var x = 0; x < 8; x++){
         
-        var nod = (matriz.mtrz[ node.pos[0]+1 ][ node.pos[1] ] != 2)? new ANode(node.pos[0]+1, node.pos[1]) : null;//este
-        if(nod){
+            var posX = nodesAdyPos[x][0],
+                posY = nodesAdyPos[x][1];
             
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
+            if(posX >= 0 && posY >= 0 && posX < matriz.sizeX && posY < matriz.sizeY){
+                
+                nod = (matriz.mtrz[posX][posY] === 0)? new ANode(posX, posY) : null;
+                if(nod !== null){ 
+                    
+                    //se inicializan los datos del nodo, luego se guarda en la lista de nodos abiertos
+                    nod.parentNode = node.pos;
+                    nod.calcF(costMov);
+                    abierto.push(nod);
+                    
+                }
+                
+            }
         
-        var nod = (matriz.mtrz[ node.pos[0]+1 ][ node.pos[1]+1 ] != 2)? new ANode(node.pos[0]+1, node.pos[1]+1) : null;//sureste
-        if(nod){
-            
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
-        
-        var nod = (matriz.mtrz[ node.pos[0] ][ node.pos[1]+1 ] != 2)? new ANode(node.pos[0], node.pos[1]+1) : null;//sur
-        if(nod){
-            
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
-        
-        var nod = (matriz.mtrz[ node.pos[0]-1 ][ node.pos[1]+1 ] != 2)? new ANode(node.pos[0]-1, node.pos[1]+1) : null;//suroeste
-        if(nod){
-            
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
-        
-        nod = (matriz.mtrz[ node.pos[0]-1 ][ node.pos[1] ] != 2)? new ANode(node.pos[0]-1, node.pos[1]) : null;//oeste
-        if(nod){
-            
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
-        
-        var nod = (matriz.mtrz[ node.pos[0]-1 ][ node.pos[1]-1 ] != 2)? new ANode(node.pos[0]-1, node.pos[1]-1) : null;//noroeste
-        if(nod){
-            
-            nod.setParentN(node.pos);
-            nod.calcF();
-            abierto.push(nod);
-            
-        }
+        }//fin For
         
         //establece el nodo con la menor distancia al destino
         var f = 1000000;
         console.log("abierto length : "+abierto.length);
         for(var x = 0; x < abierto.length; x++){
         
-            var beforePosX = (mov.length < 2)? -1 : mov[mov.length-2].pos[0];
-            var beforePosY = (mov.length < 2 )? -1 : mov[mov.length-2].pos[1];
-            if(abierto[x].f < f && (abierto[x].pos[0] != beforePosX || abierto[x].pos[1] != beforePosY) ){
+            if(abierto[x].f < f){
             
                 f = abierto[x].f;
                 node = abierto[x];
@@ -114,7 +69,7 @@ function main(){
         }
         
         //si el nodo esta ubicado en el destino se cierra el bucle
-        if( matriz.mtrz[ node.pos[0] ][ node.pos[1] ] == 3 ){
+        if( matriz.dest[0] === node.pos[0] && matriz.dest[1] === node.pos[1] ){
         
             break;
         
@@ -125,6 +80,8 @@ function main(){
             costMov += dist(node.pos[0], node.pos[1], node.parentNode[0], node.parentNode[1]);
             abierto = new Array();//se limpia la lista
             console.log(node.pos[0]+" : "+node.pos[1]);
+            
+            matriz.mtrz[ node.pos[0] ][ node.pos[1] ] = 1;//se cierra el nodo
         
         }
         
@@ -177,7 +134,7 @@ function ANode(x, y){
     this.g = 0;
     this.h = 0;
     
-    this.calcF = function(){
+    this.calcF = function(costMov){
     
         if( this.parentNode[0] == null || this.parentNode[1] == null){
         

@@ -62,18 +62,22 @@ function opcion(evt){
     
         case "inicio":
             selected = 2;
+            write("Inicio; selected:"+selected);
             break;
             
         case "obstaculo":
             selected = 1;
+            write("Obstaculo; selected:"+selected);
             break;
             
         case "destino":
             selected = 3;
+            write("Destino; selected:"+selected);
             break;
             
         case "borrar":
             selected = 0;
+            write("Borrar; selected:"+selected);
             break;
             
         default:
@@ -151,19 +155,12 @@ function canvasEvent(evt){
             
         case 2://node de inicio
             if(matrzNum == 0 && (matriz.dest[0] != pos[0] || matriz.dest[1] != pos[1]) ){
-                
-                matriz.ini = pos;
-            
-            }
+                matriz.ini = pos;}
             break;
             
         case 3://nodo destino
             if(matrzNum == 0 && matriz.ini[0] != pos[0] || matriz.ini[1] != pos[1]){
-                
-                matriz.dest = pos; 
-            
-            
-            }
+                matriz.dest = pos;}
             break;
             
         default:
