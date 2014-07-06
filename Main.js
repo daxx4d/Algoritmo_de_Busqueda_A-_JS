@@ -51,7 +51,7 @@ function reiniciar(){
 function opcion(evt){
 
     evt = $(evt.target);
-    var sel = "Error";
+    //var sel = "Error";
     
     
     switch(evt.attr("class")){
@@ -86,7 +86,7 @@ function canvasEvent(evt){
     
     var posX = evt.clientX;
     var posY = evt.clientY;
-    var anch = canvas.width / matriz.x;
+    var anch = canvas.width / matriz.sizeX;
     
     write(posX+":"+posY);
     
@@ -175,15 +175,15 @@ function paint(){
 
     var posX = 0;
     var posY = 0;
-    var anch = canvas.width / matriz.x;
+    var anch = canvas.width / matriz.sizeX;
     
     ctx.fillStyle = "white";
     ctx.fillRect(0, 0, canvas.width, canvas.height);
     
     //se dibuja un borde alrededor de cada elemento de la matriz principal
-    for(var y = 0; y < matriz.y; y++){
+    for(var y = 0; y < matriz.sizeY; y++){
     
-        for(var x = 0; x < matriz.x; x++){
+        for(var x = 0; x < matriz.sizeX; x++){
             
             ctx.moveTo(posX, posY);
             ctx.lineTo(posX, posY+anch);
@@ -191,7 +191,6 @@ function paint(){
             ctx.lineTo(posX+anch, posY);
             ctx.lineTo(posX, posY);
             ctx.strokeStyle = "black";
-            ctx.stroke();
             
             posX += anch;
             
@@ -200,7 +199,8 @@ function paint(){
         posX = 0;
         posY += anch;
               
-    }
+    }//fin For
+    ctx.stroke();//al final se dibujan todas las lines trazadas
     
     //se dibuja el cuadro de inicio
     posX = (matriz.ini[0] == 0)? 0 : anch * (matriz.ini[0]-0);
@@ -217,9 +217,9 @@ function paint(){
     
     //se dibujan los obstaculos
     posX = 0; posY = 0;
-    for(var y = 0; y < matriz.y; y++){
+    for(var y = 0; y < matriz.sizeY; y++){
     
-        for(var x = 0; x < matriz.x; x++){
+        for(var x = 0; x < matriz.sizeY; x++){
             
             if(matriz.mtrz[x][y] == 2){
             
@@ -241,7 +241,7 @@ function paint(){
 
 function paintMovs(mov){
 
-    var anch = canvas.width / matriz.x;
+    var anch = canvas.width / matriz.sizeX;
     for(var x = 1;x < mov.length; x++){
     
         var nod = mov[x];
@@ -269,29 +269,25 @@ function write(text){
 // 40/24
 function Matriz(x, y){
 
-    this.x = (x == null)? 1 : x;
-    this.y = (y == null)? 1 : y;
+    this.sizeX = (x == null)? 1 : x;
+    this.sizeY = (y == null)? 1 : y;
     this.mtrz = null;
-    
-    this.abierto = null;
-    this.cerrado = null;
     
     this.ini = [0,0];
     this.dest = [x-1,y-1];
-    this.obstlc = new Array();
     
     this.init = function(){
     
-        this.mtrz = new Array(this.x);
-        for(x = 0; x < this.x; x++){
+        this.mtrz = new Array(this.sizeX);
+        for(x = 0; x < this.sizeX; x++){
         
-            this.mtrz[x] = new Array(this.y);
+            this.mtrz[x] = new Array(this.sizeY);
         
         }
         
-        for(var x = 0; x < this.x; x++){
+        for(var x = 0; x < this.sizeX; x++){
         
-            for(var y = 0; y < this.y; y++){
+            for(var y = 0; y < this.sizeY; y++){
             
                 this.mtrz[x][y] = 0;
             
@@ -301,12 +297,6 @@ function Matriz(x, y){
         
         console.log("Matriz cargada");
         console.info(this);
-    
-    }
-    
-    this.genObstlc = function(){
-    
-    
     
     }
 
