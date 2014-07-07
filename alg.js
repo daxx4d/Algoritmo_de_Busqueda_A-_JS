@@ -13,7 +13,7 @@ function main(){
     mov.push(node);
     
     var abierto = new Array(),
-        cont = 0,
+        cont = 0;
     while(true){
     
         //se revisa siguiendo el orden de las agujas del reloj
