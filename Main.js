@@ -90,7 +90,7 @@ function opcion(evt){
 
 function canvasEvent(evt){
 
-    targ = evt.target;
+    var targ = evt.target;
     
     var posX = evt.clientX;
     var posY = evt.clientY;
@@ -145,21 +145,21 @@ function canvasEvent(evt){
     switch(selected){
             
         case 0://nodo abierto
-            if(matrzNum == 1){ matriz.mtrz[ pos[0] ][ pos[1] ] = 0; }
+            if(matrzNum === 1){ matriz.mtrz[ pos[0] ][ pos[1] ] = 0; }
             break;
             
         case 1://nodo cerrado
-            if( (matriz.ini[0] != pos[0] || matriz.ini[1] != pos[1]) && (matriz.dest[0] != pos[0] || matriz.dest[1] != pos[1]) ){
-                matriz.mtrz[ pos[0] ][ pos[1] ] = (matrzNum == 0)? 1 : 0; }
+            if( (matriz.ini[0] !== pos[0] || matriz.ini[1] !== pos[1]) && (matriz.dest[0] !== pos[0] || matriz.dest[1] !== pos[1]) ){
+                matriz.mtrz[ pos[0] ][ pos[1] ] = (matrzNum === 0)? 1 : 0; }
             break;
             
         case 2://node de inicio
-            if(matrzNum == 0 && (matriz.dest[0] != pos[0] || matriz.dest[1] != pos[1]) ){
+            if(matrzNum === 0 && (matriz.dest[0] !== pos[0] || matriz.dest[1] !== pos[1]) ){
                 matriz.ini = pos;}
             break;
             
         case 3://nodo destino
-            if(matrzNum == 0 && matriz.ini[0] != pos[0] || matriz.ini[1] != pos[1]){
+            if(matrzNum === 0 && matriz.ini[0] !== pos[0] || matriz.ini[1] !== pos[1]){
                 matriz.dest = pos;}
             break;
             
@@ -208,23 +208,23 @@ function paint(){
     ctx.stroke();//al final se dibujan todas las lines trazadas
     
     //se dibuja el cuadro de inicio
-    posX = (matriz.ini[0] == 0)? 0 : anch * (matriz.ini[0]-0);
-    posY = (matriz.ini[1] == 0)? 0 : anch * (matriz.ini[1]-0);
+    posX = (matriz.ini[0] === 0)? 0 : anch * (matriz.ini[0]-0);
+    posY = (matriz.ini[1] === 0)? 0 : anch * (matriz.ini[1]-0);
     ctx.fillStyle = "blue"
     ctx.fillRect(posX,posY,anch,anch);
     
     //se dibuja el cuadro de destino
-    posX = (matriz.dest[0] == 0)? 0 : anch * (matriz.dest[0]-0);
-    posY = (matriz.dest[1] == 0)? 0 : anch * (matriz.dest[1]-0);
+    posX = (matriz.dest[0] === 0)? 0 : anch * (matriz.dest[0]-0);
+    posY = (matriz.dest[1] === 0)? 0 : anch * (matriz.dest[1]-0);
     ctx.fillStyle = "red"
     ctx.fillRect(posX,posY,anch,anch);
     
     
     //se dibujan los obstaculos
     posX = 0; posY = 0;
-    for(var y = 0; y < matriz.sizeY; y++){
+    for( y = 0; y < matriz.sizeY; y++){
     
-        for(var x = 0; x < matriz.sizeY; x++){
+        for( x = 0; x < matriz.sizeY; x++){
             
             if(matriz.mtrz[x][y] == 1){/****************/
             
@@ -251,8 +251,8 @@ function paintMovs(mov){
     
         var nod = mov[x];
         
-        var posX = (nod.pos[0] == 0)? 0 : anch * nod.pos[0];
-        var posY = (nod.pos[1] == 0)? 0 : anch * nod.pos[1];
+        var posX = (nod.pos[0] === 0)? 0 : anch * nod.pos[0];
+        var posY = (nod.pos[1] === 0)? 0 : anch * nod.pos[1];
         
         ctx.fillStyle = "#68ff6b";
         ctx.fillRect(posX, posY, anch, anch);
@@ -274,8 +274,8 @@ function write(text){
 // 40/24
 function Matriz(x, y){
 
-    this.sizeX = (x == null)? 1 : x;
-    this.sizeY = (y == null)? 1 : y;
+    this.sizeX = (x === null)? 1 : x;
+    this.sizeY = (y === null)? 1 : y;
     this.mtrz = null;
     
     this.ini = [0,0];
@@ -290,7 +290,7 @@ function Matriz(x, y){
         
         }
         
-        for(var x = 0; x < this.sizeX; x++){
+        for( x = 0; x < this.sizeX; x++){
         
             for(var y = 0; y < this.sizeY; y++){
             
