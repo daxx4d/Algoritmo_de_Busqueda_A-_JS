@@ -89,8 +89,6 @@ function opcion(evt){
 }
 
 function canvasEvent(evt){
-
-    var targ = evt.target;
     
     var posX = evt.clientX;
     var posY = evt.clientY;
@@ -226,7 +224,7 @@ function paint(){
     
         for( x = 0; x < matriz.sizeY; x++){
             
-            if(matriz.mtrz[x][y] == 1){/****************/
+            if(matriz.mtrz[x][y] === 1){/****************/
             
                 ctx.fillStyle = "grey"
                 ctx.fillRect(posX,posY,anch,anch);
