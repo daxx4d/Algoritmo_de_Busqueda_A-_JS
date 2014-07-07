@@ -14,7 +14,6 @@ function main(){
     
     var abierto = new Array(),
         cont = 0,
-        sdf = 0;
     while(true){
     
         //se revisa siguiendo el orden de las agujas del reloj
@@ -57,7 +56,7 @@ function main(){
         //establece el nodo con la menor distancia al destino
         var f = 1000000;
         console.log("abierto length : "+abierto.length);
-        for(var x = 0; x < abierto.length; x++){
+        for(x = 0; x < abierto.length; x++){
         
             if(abierto[x].f < f){
             
@@ -115,7 +114,7 @@ function heuristic(x, y){
 
 function dist(posX, posY, parentX, parentY){
 
-    if(posX != parentX && posY != parentY){
+    if(posX !== parentX && posY !== parentY){
         
         return 14;
     
@@ -159,35 +158,6 @@ function ANode(x, y){
     
         this.parentNode[0] = pos[0];
         this.parentNode[1] = pos[1];
-    
-    }
-
-}
-
-function MObjt(){
-
-    this.matriz = 0;
-    this.ini = 0;
-    this.dest = 0;
-    
-    this.abierto = null;
-    this.cerrado = null;
-    
-    this.load = function(iniX, iniY, destX, destY, mtrz){
-    
-        console.log("cargando 'MObject'");
-        
-        this.ini = [iniX, iniY];
-        this.dest = [destX, destY];
-        
-        this.matriz = new Array(matriz.mtrz.length-1);
-        for(var x = 0; x < matriz.mtrz.length; x++){
-            
-            this.matriz[x] = new Array( matriz.mtrz[0].lenght-1 );
-        
-        }
-        
-        console.info(this.matriz);
     
     }
 
