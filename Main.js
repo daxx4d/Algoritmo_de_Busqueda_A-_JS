@@ -36,6 +36,8 @@ function buscar(){
 
     main();
 
+    write("Listo...");
+
 }
 
 function reiniciar(){
@@ -249,8 +251,8 @@ function paintMovs(mov){
     
         var nod = mov[x];
         
-        var posX = (nod.pos[0] === 0)? 0 : anch * nod.pos[0];
-        var posY = (nod.pos[1] === 0)? 0 : anch * nod.pos[1];
+        var posX = (nod[0] === 0)? 0 : anch * nod[0];
+        var posY = (nod[1] === 0)? 0 : anch * nod[1];
         
         ctx.fillStyle = "#68ff6b";
         ctx.fillRect(posX, posY, anch, anch);
