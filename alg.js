@@ -15,45 +15,10 @@ function main(){
     var abierto = new Array(),
         cont = 0;
     while(true){
-    
-        //se revisa siguiendo el orden de las agujas del reloj
         
         //la nuevas posicion es igual al ultimo movimineto
         node = mov[mov.length-1];
         console.log(node);
-        
-        /*
-        //matriz que guarda las posibles posiciones adyacentes al nodo 
-        //[]1º para elegir cual nodo adyacente []2ª los valores X o Y del nodo adyacente
-        /*var nodesAdyPos = new Array(8);
-        nodesAdyPos[0] = new Array(node.pos[0], node.pos[1]-1); nodesAdyPos[1] = new Array(node.pos[0]+1, node.pos[1]-1);//norte, noreste
-        nodesAdyPos[2] = new Array(node.pos[0]+1, node.pos[1]); nodesAdyPos[3] = new Array(node.pos[0]+1, node.pos[1]+1);//este, sreste
-        nodesAdyPos[4] = new Array(node.pos[0], node.pos[1]+1); nodesAdyPos[5] = new Array(node.pos[0]-1, node.pos[1]+1);//sur, suroeste
-        nodesAdyPos[6] = new Array(node.pos[0]-1, node.pos[1]); nodesAdyPos[7] = new Array(node.pos[0]-1, node.pos[1]-1);//oeste, noroeste
-        
-        //se guardan las posiciones adyacentes disponibles
-        var nod;
-        for(var x = 0; x < 8; x++){
-        
-            var posX = nodesAdyPos[x][0],
-                posY = nodesAdyPos[x][1];
-            
-            if(posX >= 0 && posY >= 0 && posX < matriz.sizeX && posY < matriz.sizeY){
-                
-                nod = (matriz.mtrz[posX][posY] === 0)? new ANode(posX, posY) : null;
-                if(nod !== null){ 
-                    
-                    //se inicializan los datos del nodo, luego se guarda en la lista de nodos abiertos
-                    nod.parentNode = node.pos;
-                    nod.calcF(costMov);
-                    abierto.push(nod);
-                    
-                }
-                
-            }
-        
-        }//fin For
-        */
 
         adyacentNodes(node, abierto, costMov);
         
@@ -99,11 +64,7 @@ function main(){
     }//fin while
     
     console.log("Listo!!!!!!");
-    for(x = 0; x < mov.length-1; x++){
-
-        console.log(mov[x][0]+":"+mov[x][1]);
-
-    }
+    for(x = 0; x < mov.length-1; x++){ console.log(mov[x][0]+":"+mov[x][1]); }
     
     paintMovs(mov);
     
@@ -113,6 +74,7 @@ function main(){
 
 function adyacentNodes(node, abierto, costMov){
 
+    //se establece las posiciones de los nodos adyacentes
     var nodesAdyPos = new Array(8);
         nodesAdyPos[0] = new Array(node.pos[0], node.pos[1]-1); nodesAdyPos[1] = new Array(node.pos[0]+1, node.pos[1]-1);//norte, noreste
         nodesAdyPos[2] = new Array(node.pos[0]+1, node.pos[1]); nodesAdyPos[3] = new Array(node.pos[0]+1, node.pos[1]+1);//este, sreste
@@ -164,8 +126,10 @@ function rutaIniToDest(node){
     var cont = 0;
     while(true){
 
+        //si el nodo no tiene un nodo padre significa que es el nodo inicial por lo que el bucle se termina
         if(node.parentNode === null){ ruta.push(node.pos); break; }
 
+        //se añade el nuevo nodo a la lista
         ruta.push(node.pos);
         node = node.parentNode;
 
