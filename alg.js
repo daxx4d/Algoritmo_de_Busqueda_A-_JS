@@ -1,7 +1,7 @@
 
 //var costMov = 0;
 
-function main(matrz){
+function main(matriz){
     
     var matrz = new Matriz(matriz.sizeX, matriz.sizeY);
     matrz.ini[0] = matriz.ini[0];
@@ -9,9 +9,9 @@ function main(matrz){
     matrz.dest[0] = matriz.dest[0];
     matrz.dest[1] = matriz.dest[1];
     matrz.init();
-    for(var limX = 0; limX < this.sizeX; limX++){
+    for(var limX = 0; limX < matriz.sizeX; limX++){
         
-        for(var limY = 0; limY < this.sizeY; limY++){
+        for(var limY = 0; limY < matriz.sizeY; limY++){
             
             matrz.mtrz[limX][limY] = matriz.mtrz[limX][limY];
             
