@@ -1,26 +1,42 @@
 
 //var costMov = 0;
 
-function main(){
+function main(matrz){
     
-    var costMov = 0;
+    var matrz = new Matriz(matriz.sizeX, matriz.sizeY);
+    matrz.ini[0] = matriz.ini[0];
+    matrz.ini[1] = matriz.ini[1];
+    matrz.dest[0] = matriz.dest[0];
+    matrz.dest[1] = matriz.dest[1];
+    matrz.init();
+    for(var limX = 0; limX < this.sizeX; limX++){
+        
+        for(var limY = 0; limY < this.sizeY; limY++){
+            
+            matrz.mtrz[limX][limY] = matriz.mtrz[limX][limY];
+            
+        }
+        
+    }
     //contendra los movimientos necesarios para llegar a destino 
     var mov = new Array();
     
     //establece la ubicacion inicial como primera posicion
-    var node = new ANode(matriz.ini[0], matriz.ini[1]);
-    matriz.mtrz[ node.pos[0] ][ node.pos[1] ] = 1;
+    var node = new ANode(matrz.ini[0], matrz.ini[1]);
+    node.g = 0;
+    matrz.mtrz[ node.pos[0] ][ node.pos[1] ] = 1;
     mov.push(node);
     
     var abierto = new Array(),
-        cont = 0;
+        cont = 0,
+        limt = 1000;
     while(true){
         
         //la nuevas posicion es igual al ultimo movimineto
         node = mov[mov.length-1];
         console.log(node);
 
-        adyacentNodes(node, abierto, costMov);
+        adyacentNodes(matrz, node, abierto);
         
         //establece el nodo con la menor distancia al destino
         var f = 1000000,
@@ -39,7 +55,7 @@ function main(){
         }
         
         //si el nodo esta ubicado en el destino se cierra el bucle
-        if( matriz.dest[0] === node.pos[0] && matriz.dest[1] === node.pos[1] ){
+        if( matrz.dest[0] === node.pos[0] && matrz.dest[1] === node.pos[1] ){
         
             //ya que el nodo actual esta en la posicion actual se pasa su nodo padre
             mov = rutaIniToDest(node.parentNode);
@@ -51,14 +67,13 @@ function main(){
             abierto.splice(num,1);//se borra el nodo de la lista
 
             mov.push(node);
-            costMov += dist(node.pos[0], node.pos[1], node.parentNode[0], node.parentNode[1]);
             console.log(node.pos[0]+" : "+node.pos[1]);
             
-            matriz.mtrz[ node.pos[0] ][ node.pos[1] ] = 1;//se cierra el nodo
+            matrz.mtrz[ node.pos[0] ][ node.pos[1] ] = 1;//se cierra el nodo
         
         }
         
-        if(cont >= 200 ){ console.error("Limite de movimentos alcanzado"); break; }
+        if(cont > limt){ console.error("Limite de movimentos alcanzado main()"); break; }
         else{ cont++; }
     
     }//fin while
@@ -72,7 +87,7 @@ function main(){
 
 }
 
-function adyacentNodes(node, abierto, costMov){
+function adyacentNodes(matrz, node, abierto){
 
     //se establece las posiciones de los nodos adyacentes
     var nodesAdyPos = new Array(8);
@@ -88,10 +103,10 @@ function adyacentNodes(node, abierto, costMov){
             posY = nodesAdyPos[x][1];
 
         //true si la posicion esta dentro del rango de la matriz
-        if(posX >= 0 && posY >= 0 && posX < matriz.sizeX && posY < matriz.sizeY){
+        if(posX >= 0 && posY >= 0 && posX < matrz.sizeX && posY < matrz.sizeY){
 
             //true si el nodo esta abierto
-            if(matriz.mtrz[posX][posY] === 0){
+            if(matrz.mtrz[posX][posY] === 0){
 
                 nod = new ANode(posX, posY)
                 for(var num = 0; num < abierto.length; num++){
@@ -107,7 +122,7 @@ function adyacentNodes(node, abierto, costMov){
 
                 //se inicializan los datos del nodo, luego se guarda en la lista de nodos abiertos
                 nod.parentNode = node;
-                nod.calcF(costMov);
+                nod.calcF(matrz);
                 abierto.push(nod);
 
             }
@@ -133,25 +148,13 @@ function rutaIniToDest(node){
         ruta.push(node.pos);
         node = node.parentNode;
 
+        if(cont > 500){ console.error("limite de pasos alcanzado rutaIniToDest()"); break; }
+        
     }
 
     console.log("ruta encontrada");
     console.info(ruta)
     return ruta.reverse();
-
-}
-
-function heuristic(x, y){
-
-    var IPosX = x,
-        IPosY = y,
-        FPosX = matriz.dest[0],
-        FPosY = matriz.dest[1];
-    
-    var totX = (IPosX > FPosX)? IPosX - FPosX : FPosX - IPosX;
-    var totY = (IPosY > FPosY)? IPosY - FPosY : FPosY - IPosY;
-    
-    return totX+totY;
 
 }
 
@@ -176,7 +179,7 @@ function ANode(x, y){
     this.g = 0;
     this.h = 0;
     
-    this.calcF = function(costMov){
+    this.calcF = function(matrz){
     
         if( this.parentNode.pos[0] == null || this.parentNode.pos[1] == null){
         
@@ -184,10 +187,24 @@ function ANode(x, y){
             
         }
         
-        this.h = heuristic(this.pos[0], this.pos[1]);
+        this.h = this.heuristic(matrz);
         this.g = this.parentNode.g + dist(this.pos[0], this.pos[1], this.parentNode[0], this.parentNode[1]);
         this.f = this.h + this.g;
     
+    }
+    
+    this.heuristic = function(matrz){
+
+        var IPosX = this.pos[0],
+            IPosY = this.pos[1],
+            FPosX = matrz.dest[0],
+            FPosY = matrz.dest[1];
+    
+        var totX = (IPosX > FPosX)? IPosX - FPosX : FPosX - IPosX,
+            totY = (IPosY > FPosY)? IPosY - FPosY : FPosY - IPosY;
+    
+        return totX+totY;
+
     }
     
     this.setPos = function(pos){

@@ -34,7 +34,7 @@ function ini(){
 
 function buscar(){
 
-    main();
+    main(matriz);
 
     write("Listo...");
 
@@ -159,7 +159,7 @@ function canvasEvent(evt){
             break;
             
         case 3://nodo destino
-            if(matrzNum === 0 && matriz.ini[0] !== pos[0] || matriz.ini[1] !== pos[1]){
+            if(matrzNum === 0 && (matriz.ini[0] !== pos[0] || matriz.ini[1] !== pos[1]) ){
                 matriz.dest = pos;}
             break;
             
@@ -192,7 +192,7 @@ function paint(){
             
             ctx.moveTo(posX, posY);
             ctx.lineTo(posX, posY+anch);
-            ctx.lineTo(posX+anch, posY+anch);
+            ctx.lineTo(posX+anch, posY+anch);$
             ctx.lineTo(posX+anch, posY);
             ctx.lineTo(posX, posY);
             ctx.strokeStyle = "black";
@@ -224,7 +224,7 @@ function paint(){
     posX = 0; posY = 0;
     for( y = 0; y < matriz.sizeY; y++){
     
-        for( x = 0; x < matriz.sizeY; x++){
+        for( x = 0; x < matriz.sizeX; x++){
             
             if(matriz.mtrz[x][y] === 1){/****************/
             
